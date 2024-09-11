@@ -54,8 +54,9 @@ app_name=$(parseJson displayName ${ENTRA_SERVICE_PRINCIPAL})
 checkSubshellRc ${app_name}
 
 token_resp=$(mktemp)
-
-http_status=$(curl -s -o ${token_resp} -w "%{response_code}" -X POST https://login.microsoftonline.com/${tenant}/oauth2/token \
+token_url=https://login.microsoftonline.com/${tenant}/oauth2/token
+token_print_url='https://login.microsoftonline.com/<tenant>/oauth2/token'
+http_status=$(curl -s -o ${token_resp} -w "%{response_code}" -X POST ${token_url} \
 	-H 'Content-Type: application/x-www-form-urlencoded' \
 	--data-urlencode grant_type=client_credentials \
 	--data-urlencode client_id=${app_id} \
@@ -64,11 +65,15 @@ http_status=$(curl -s -o ${token_resp} -w "%{response_code}" -X POST https://log
 
 rc=$?
 if [ ${rc} -ne 0 ]; then
-	echo "curl failed, rc: ${rc}"
+	echo "failed to get Azure token from ${token_print_url}"
+	echo "curl failed with exit code: ${rc}"
+	echo "please check https://everything.curl.dev/cmdline/exitcode.html for the exit code meaning"
 	exit 10
 fi
 if [ "${http_status}" != "200" ]; then
-	echo "curl failed, http status: ${http_status}"
+	echo "failed to get Azure token from ${token_print_url}"
+	echo "curl failed with HTTP status: ${http_status}"
+	echo "please check https://developer.mozilla.org/en-US/docs/Web/HTTP/Status for the HTTP status meaning"
 	exit 10
 fi
 
