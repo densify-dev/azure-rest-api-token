@@ -1,10 +1,13 @@
-FROM alpine:3.20
+FROM alpine:latest
+ARG VERSION
+ARG RELEASE
+ARG TARGETARCH
 
 LABEL name="azure-rest-api-token" \
       vendor="Densify" \
       maintainer="support@densify.com" \
-      version="1.0.1" \
-      release="1.0.1" \
+      version="${VERSION}" \
+      release="${RELEASE}" \
       summary="Azure REST API token" \
       description="Gets a bearer token for a Microsoft Entra app for usage with Azure REST API"
 
